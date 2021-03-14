@@ -4,6 +4,7 @@ import com.gao.bean.User;
 import com.gao.service.UserService;
 import com.gao.util.AjaxResult;
 import com.gao.util.Const;
+import com.gao.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,14 +16,13 @@ import java.util.Map;
 
 @Controller
 public class DispatcherController {
+    @Autowired
+    UserService userService;
 
     @RequestMapping("/index")
     public String index(){
         return "login";
     }
-
-    @Autowired
-    UserService userService;
 
     @ResponseBody
     @RequestMapping("/doLogin")
@@ -31,7 +31,7 @@ public class DispatcherController {
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("loginacct", loginacct);
-            map.put("userpswd", userpswd);
+            map.put("userpswd", MD5Util.digest(userpswd));
             map.put("type", type);
 
             User user = userService.queryUserlogin(map);

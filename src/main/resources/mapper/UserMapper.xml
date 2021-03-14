@@ -40,4 +40,13 @@
     from t_user
     where loginacct=#{loginacct} and password=#{userpswd}
   </select>
+  <select id="queryPage" resultMap="BaseResultMap">
+    select *
+    from t_user
+    limit #{startIndex},#{pagesize}
+  </select>
+  <select id="queryTotalSize" resultType="int">
+    select count(*)
+    from t_user
+  </select>
 </mapper>
