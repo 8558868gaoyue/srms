@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -49,22 +50,34 @@
             <ol class="breadcrumb">
                 <li><a href="#">首页</a></li>
                 <li><a href="#">数据列表</a></li>
-                <li class="active">新增</li>
+                <li class="active">分配角色</li>
             </ol>
             <div class="panel panel-default">
-                <div class="panel-heading">表单数据<div style="float:right;cursor:pointer;" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-question-sign"></i></div></div>
                 <div class="panel-body">
-                    <form role="addForm">
+                    <form role="form" class="form-inline">
                         <div class="form-group">
-                            <label for="loginacct">登陆账号</label>
-                            <input type="text" class="form-control" id="loginacct" placeholder="请输入登陆账号">
+                            <label>未分配角色列表</label><br>
+                            <select id="leftList" class="form-control" multiple size="10" style="width:200px;overflow-y:auto;">
+                                <c:forEach items="${leftList}" var="role">
+                                    <option class="active" id="froleid" value="${role.id}">${role.name}</option>
+                                </c:forEach>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="username">用户姓名</label>
-                            <input type="text" class="form-control" id="username" placeholder="请输入用户姓名">
+                            <ul>
+                                <li id="leftBtn" class="btn btn-default glyphicon glyphicon-chevron-right"></li>
+                                <br>
+                                <li id="rightBtn" class="btn btn-default glyphicon glyphicon-chevron-left" style="margin-top:20px;"></li>
+                            </ul>
                         </div>
-                        <button type="button" onclick="add()" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> 新增</button>
-                        <button type="button" onclick="reset()" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重置</button>
+                        <div class="form-group" style="margin-left:40px;">
+                            <label>已分配角色列表</label><br>
+                            <select id="rightList" class="form-control" multiple size="10" style="width:200px;overflow-y:auto;">
+                                <c:forEach items="${rightList}" var="role">
+                                    <option  value=${role.id}>${role.name}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -90,39 +103,72 @@
         });
     });
 
-    var loadingIndex=-1;
-    function add(){
-        var loginacct=$("#loginacct");
-        var username=$("#username");
+    //分配角色
+    $("#leftBtn").click(function () {
+        var options=$("#leftList option:selected");
+        var jsonObj={
+            userid:${param.id},
+        };
+        $.each(options,function (i,n) {
+            jsonObj["ids["+i+"]"]=parseInt(this.value);
+        });
 
+        var index=-1;
         $.ajax({
             type:"post",
-            url:"${pageContext.request.contextPath}/user/doAdd.do",
-            data:{
-                loginacct:loginacct.val(),
-                username:username.val(),
-            },
+            url:"doAssignRole.do",
+            data:jsonObj,
             beforeSend:function () {
-                loadingIndex = layer.msg('处理中', {icon: 16});
+                index=layer.msg('正在分配角色!', {icon: 16});
                 return true;
             },
             success:function (result) {
-                layer.close(loadingIndex);
+                layer.close(index);
                 if(result.success){
-                    layer.msg("保存成功", {time:1000, icon:6, shift:6});
-                    window.location.href = "toIndex.htm";
-                }else{
-                    layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                    $("#rightList").append(options);
+                }else {
+                    layer.msg("修改失败", {time:1000, icon:5, shift:6});
                 }
             },
             error:function () {
-                layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                layer.msg("修改失败", {time:1000, icon:5, shift:6});
             }
         });
-    }
-    function reset(){
-        $("#addForm")[0].reset();
-    }
+    });
+
+    //取消角色
+    $("#rightBtn").click(function () {
+        var options=$("#rightList option:selected");
+        var jsonObj={
+            userid:${param.id},
+            //类似ids:["1","2","3","4"]
+        };
+        $.each(options,function (i,n) {
+            jsonObj["ids["+i+"]"]=this.value;
+        });
+        var index=-1;
+
+        $.ajax({
+            type:"post",
+            url:"doUnAssignRole.do",
+            data:jsonObj,
+            beforeSend:function () {
+                index=layer.msg('正在分配角色!', {icon: 16});
+                return true;
+            },
+            success:function (result) {
+                layer.close(index);
+                if(result.success){
+                    $("#leftList").append(options);
+                }else {
+                    layer.msg("修改失败", {time:1000, icon:5, shift:6});
+                }
+            },
+            error:function () {
+                layer.msg("修改失败", {time:1000, icon:5, shift:6});
+            }
+        });
+    });
 </script>
 </body>
 </html>

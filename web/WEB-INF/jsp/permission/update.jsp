@@ -25,7 +25,7 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <div><a class="navbar-brand" style="font-size:32px;" href="user.html">用户维护</a></div>
+            <div><a class="navbar-brand" style="font-size:32px;" href="user.html">众筹平台 - 许可维护</a></div>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -49,21 +49,21 @@
             <ol class="breadcrumb">
                 <li><a href="#">首页</a></li>
                 <li><a href="#">数据列表</a></li>
-                <li class="active">新增</li>
+                <li class="active">修改</li>
             </ol>
             <div class="panel panel-default">
                 <div class="panel-heading">表单数据<div style="float:right;cursor:pointer;" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-question-sign"></i></div></div>
                 <div class="panel-body">
-                    <form role="addForm">
+                    <form role="updateForm">
                         <div class="form-group">
-                            <label for="loginacct">登陆账号</label>
-                            <input type="text" class="form-control" id="loginacct" placeholder="请输入登陆账号">
+                            <label for="fname">许可名称</label>
+                            <input type="text" class="form-control" id="fname" value="${permission.name}">
                         </div>
-                        <div class="form-group">
-                            <label for="username">用户姓名</label>
-                            <input type="text" class="form-control" id="username" placeholder="请输入用户姓名">
+                        <div class="furl">
+                            <label for="furl">许可URL</label>
+                            <input type="text" class="form-control" id="furl" value="${permission.url}">
                         </div>
-                        <button type="button" onclick="add()" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> 新增</button>
+                        <button type="button" onclick="update()" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i> 修改</button>
                         <button type="button" onclick="reset()" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重置</button>
                     </form>
                 </div>
@@ -90,38 +90,37 @@
         });
     });
 
-    var loadingIndex=-1;
-    function add(){
-        var loginacct=$("#loginacct");
-        var username=$("#username");
+    function reset() {
+        $("#updateForm")[0].reset();
+    }
+
+
+    function update() {
+        var  fname=$("#fname");
+        var  furl=$("#furl");
 
         $.ajax({
             type:"post",
-            url:"${pageContext.request.contextPath}/user/doAdd.do",
+            url:"update.do",
             data:{
-                loginacct:loginacct.val(),
-                username:username.val(),
+                name:fname.val(),
+                url:furl.val(),
+                id:"${permission.id}"
             },
             beforeSend:function () {
-                loadingIndex = layer.msg('处理中', {icon: 16});
                 return true;
             },
             success:function (result) {
-                layer.close(loadingIndex);
                 if(result.success){
-                    layer.msg("保存成功", {time:1000, icon:6, shift:6});
-                    window.location.href = "toIndex.htm";
-                }else{
-                    layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                    window.location.href = "index.htm";
+                }else {
+                    layer.msg("修改失败", {time:1000, icon:5, shift:6});
                 }
             },
             error:function () {
-                layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                layer.msg("修改失败", {time:1000, icon:5, shift:6});
             }
         });
-    }
-    function reset(){
-        $("#addForm")[0].reset();
     }
 </script>
 </body>

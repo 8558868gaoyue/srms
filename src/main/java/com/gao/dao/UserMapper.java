@@ -1,6 +1,8 @@
 package com.gao.dao;
 
+import com.gao.bean.Role;
 import com.gao.bean.User;
+import com.gao.util.Data;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -22,4 +24,12 @@ public interface UserMapper {
     List<User> queryPage(@Param("startIndex") Integer startIndex,@Param("pagesize") Integer pagesize);
 
     int queryTotalSize();
+
+    List<Integer> queryRoleByUserId(Integer id);
+
+    List<Role> queryAllRole();
+
+    int deleteUserRole(@Param("userid") Integer userid,@Param("data") Data data);
+
+    int saveUserRole(@Param("userid") Integer userid,@Param("data") Data data);
 }

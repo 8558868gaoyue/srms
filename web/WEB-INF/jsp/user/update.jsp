@@ -49,21 +49,21 @@
             <ol class="breadcrumb">
                 <li><a href="#">首页</a></li>
                 <li><a href="#">数据列表</a></li>
-                <li class="active">新增</li>
+                <li class="active">修改</li>
             </ol>
             <div class="panel panel-default">
                 <div class="panel-heading">表单数据<div style="float:right;cursor:pointer;" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-question-sign"></i></div></div>
                 <div class="panel-body">
-                    <form role="addForm">
+                    <form role="updateForm">
                         <div class="form-group">
-                            <label for="loginacct">登陆账号</label>
-                            <input type="text" class="form-control" id="loginacct" placeholder="请输入登陆账号">
+                            <label for="floginacct">登陆账号</label>
+                            <input type="text" class="form-control" id="floginacct" value="${user.loginacct}">
                         </div>
                         <div class="form-group">
-                            <label for="username">用户姓名</label>
-                            <input type="text" class="form-control" id="username" placeholder="请输入用户姓名">
+                            <label for="fusername">用户姓名</label>
+                            <input type="text" class="form-control" id="fusername" value="${user.username}">
                         </div>
-                        <button type="button" onclick="add()" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> 新增</button>
+                        <button type="button" onclick="update()" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i> 修改</button>
                         <button type="button" onclick="reset()" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重置</button>
                     </form>
                 </div>
@@ -71,7 +71,6 @@
         </div>
     </div>
 </div>
-
 <script src="${pageContext.request.contextPath}/jquery/jquery-2.1.1.min.js"></script>
 <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.min.js"></script>
 <script src="${pageContext.request.contextPath}/script/docs.min.js"></script>
@@ -90,38 +89,37 @@
         });
     });
 
-    var loadingIndex=-1;
-    function add(){
-        var loginacct=$("#loginacct");
-        var username=$("#username");
+    function reset() {
+        $("#updateForm")[0].reset();
+    }
+
+
+    function update() {
+        var  floginacct=$("#floginacct");
+        var  fusername=$("#fusername");
 
         $.ajax({
             type:"post",
-            url:"${pageContext.request.contextPath}/user/doAdd.do",
+            url:"update.do",
             data:{
-                loginacct:loginacct.val(),
-                username:username.val(),
+                loginacct:floginacct.val(),
+                username:fusername.val(),
+                id:"${user.id}"
             },
             beforeSend:function () {
-                loadingIndex = layer.msg('处理中', {icon: 16});
                 return true;
             },
             success:function (result) {
-                layer.close(loadingIndex);
                 if(result.success){
-                    layer.msg("保存成功", {time:1000, icon:6, shift:6});
                     window.location.href = "toIndex.htm";
-                }else{
-                    layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                }else {
+                    layer.msg("修改失败", {time:1000, icon:5, shift:6});
                 }
             },
             error:function () {
-                layer.msg("保存失败", {time:1000, icon:5, shift:6});
+                layer.msg("修改失败", {time:1000, icon:5, shift:6});
             }
         });
-    }
-    function reset(){
-        $("#addForm")[0].reset();
     }
 </script>
 </body>
